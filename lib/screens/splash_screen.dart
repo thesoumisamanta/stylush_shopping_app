@@ -19,12 +19,18 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _splashController = SplashController(vsync: this);
     _splashController.startAnimation();
-    Future.delayed(Duration(seconds: 7), () {
+    _navigateToNextScreen();
+  }
+
+  void _navigateToNextScreen() async {
+    await Future.delayed(Duration(seconds: 7));
+
+    if (mounted) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => AppTour()),
       );
-    });
+    }
   }
 
   @override

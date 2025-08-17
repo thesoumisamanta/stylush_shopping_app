@@ -13,6 +13,9 @@ class SponseredCard extends StatefulWidget {
 
 class _SponseredCardState extends State<SponseredCard> {
   late PageController _pageController;
+  late PageController _overlayTextController;
+  late PageController _captionTextController;
+  
   int _currentPage = 0;
   Timer? _timer;
 
@@ -44,29 +47,78 @@ class _SponseredCardState extends State<SponseredCard> {
     },
   ];
 
+  List<Map<String, String>> _extendedSlides = [];
+
   @override
   void initState() {
     super.initState();
 
-    _slides.add(_slides[0]);
+    _extendedSlides = [..._slides, _slides[0]];
 
     _pageController = PageController(initialPage: 0);
+    _overlayTextController = PageController(initialPage: 0);
+    _captionTextController = PageController(initialPage: 0);
+
     _timer = Timer.periodic(Duration(seconds: 2), (timer) {
       if (_pageController.hasClients) {
-        _currentPage++;
-        _pageController.animateToPage(
+        _animateToNextSlide();
+      }
+    });
+  }
+
+  void _animateToNextSlide() {
+    _currentPage++;
+    
+    _pageController.animateToPage(
+      _currentPage,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+    
+    Future.delayed(Duration(milliseconds: 400), () {
+      if (_overlayTextController.hasClients) {
+        _overlayTextController.animateToPage(
           _currentPage,
-          duration: Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+    
+    Future.delayed(Duration(milliseconds: 100), () {
+      if (_captionTextController.hasClients) {
+        _captionTextController.animateToPage(
+          _currentPage,
+          duration: Duration(milliseconds: 400),
           curve: Curves.easeInOut,
         );
       }
     });
   }
 
+  void _handlePageChange(int index) {
+    if (index == _extendedSlides.length - 1) {
+      Future.delayed(Duration(milliseconds: 500), () {
+        _pageController.jumpToPage(0);
+        _overlayTextController.jumpToPage(0);
+        _captionTextController.jumpToPage(0);
+        setState(() {
+          _currentPage = 0;
+        });
+      });
+    } else {
+      setState(() {
+        _currentPage = index;
+      });
+    }
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
     _pageController.dispose();
+    _overlayTextController.dispose();
+    _captionTextController.dispose();
     super.dispose();
   }
 
@@ -94,27 +146,18 @@ class _SponseredCardState extends State<SponseredCard> {
             SizedBox(height: 5),
             Stack(
               children: [
+                // Image PageView
                 SizedBox(
                   height: ResponsiveConstants.screenHeight(context) * 0.25,
                   child: PageView.builder(
                     controller: _pageController,
-                    itemCount: _slides.length,
-                    onPageChanged: (index) {
-                      if (index == _slides.length - 1) {
-                        Future.delayed(Duration(milliseconds: 500), () {
-                          _pageController.jumpToPage(0);
-                        });
-                        _currentPage = 0;
-                      } else {
-                        setState(() {
-                          _currentPage = index;
-                        });
-                      }
-                    },
+                    itemCount: _extendedSlides.length,
+                    onPageChanged: _handlePageChange,
                     itemBuilder: (context, index) {
                       return ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
                         child: Image.asset(
-                          _slides[index]['image']!,
+                          _extendedSlides[index]['image']!,
                           fit: BoxFit.cover,
                           width: double.infinity,
                         ),
@@ -122,31 +165,52 @@ class _SponseredCardState extends State<SponseredCard> {
                     },
                   ),
                 ),
-                Positioned(
-                  child: Center(
-                    child: Text(
-                      _slides[_currentPage]['off']!,
-                      style: TextStyle(
-                        fontSize: ResponsiveConstants.screenWidth(context) * 0.08,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.white,
-                      ),
-                    ),
+                Positioned.fill(
+                  child: PageView.builder(
+                    controller: _overlayTextController,
+                    itemCount: _extendedSlides.length,
+                    physics: NeverScrollableScrollPhysics(), 
+                    itemBuilder: (context, index) {
+                      return Center(
+                        child: Text(
+                          _extendedSlides[index]['off']!,
+                          style: TextStyle(
+                            fontSize: ResponsiveConstants.screenWidth(context) * 0.08,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.white,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(2.0, 2.0),
+                                blurRadius: 4.0,
+                                color: Colors.black.withValues(alpha: 0.5),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
             SizedBox(height: 10),
-            AnimatedSwitcher(
-              duration: Duration(milliseconds: 500),
-              child: Text(
-                _slides[_currentPage]['caption']!,
-                key: ValueKey<String>(_slides[_currentPage]['caption']!),
-                style: TextStyle(
-                  fontSize: ResponsiveConstants.screenWidth(context) * 0.04,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                ),
+            // Caption text PageView
+            SizedBox(
+              height: ResponsiveConstants.screenWidth(context) * 0.06, 
+              child: PageView.builder(
+                controller: _captionTextController,
+                itemCount: _extendedSlides.length,
+                physics: NeverScrollableScrollPhysics(), 
+                itemBuilder: (context, index) {
+                  return Text(
+                    _extendedSlides[index]['caption']!,
+                    style: TextStyle(
+                      fontSize: ResponsiveConstants.screenWidth(context) * 0.04,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.black,
+                    ),
+                  );
+                },
               ),
             ),
           ],

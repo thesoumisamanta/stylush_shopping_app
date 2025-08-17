@@ -30,57 +30,111 @@ class _HomeScreenState extends State<HomeScreen> {
   final ApiServices _apiServices = ApiServices();
   List<FakeStoreModel> products = [];
   List<ProductsModel> dummyProducts = [];
-  bool isLoading = true;
-  bool isDummyLoading = true;
+  bool isPageLoading = true;
   String? errorMessage;
-
-  Future<void> fetchFakeStroreProducts() async {
-    try {
-      setState(() {
-        isLoading = true;
-        errorMessage = null;
-      });
-      final data = await _apiServices.fetchFakeStoreProducts();
-      setState(() {
-        products = data;
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        errorMessage = e.toString();
-        isLoading = false;
-      });
-    }
-  }
-
-  Future<void> fetchDummyProducts() async {
-    try {
-      setState(() {
-        isDummyLoading = true;
-        errorMessage = null;
-      });
-      final data = await _apiServices.getDummyProducts();
-      setState(() {
-        dummyProducts = data;
-        isDummyLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        errorMessage = e.toString();
-        isDummyLoading = false;
-      });
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    fetchFakeStroreProducts();
-    fetchDummyProducts();
+    _loadAllData();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Future<void> _loadAllData() async {
+    try {
+      setState(() {
+        isPageLoading = true;
+        errorMessage = null;
+      });
+
+      final results = await Future.wait([
+        _apiServices.fetchFakeStoreProducts(),
+        _apiServices.getDummyProducts(),
+      ]);
+
+      setState(() {
+        products = results[0] as List<FakeStoreModel>;
+        dummyProducts = results[1] as List<ProductsModel>;
+        isPageLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+        isPageLoading = false;
+      });
+    }
+  }
+
+  Future<void> _refreshData() async {
+    await _loadAllData();
+  }
+
+  Widget _buildLoadingScreen() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: AppColors.orange, strokeWidth: 3),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorScreen() {
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 80, color: AppColors.grey),
+              SizedBox(height: 20),
+              Text(
+                'Oops! Something went wrong',
+                style: TextStyle(
+                  fontSize: ResponsiveConstants.screenWidth(context) * 0.05,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.black,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                errorMessage ?? 'Please check your internet connection',
+                style: TextStyle(
+                  fontSize: ResponsiveConstants.screenWidth(context) * 0.035,
+                  color: AppColors.grey,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: _refreshData,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.orange,
+                  foregroundColor: AppColors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'Try Again',
+                  style: TextStyle(
+                    fontSize: ResponsiveConstants.screenWidth(context) * 0.04,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainContent() {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.white,
@@ -121,189 +175,194 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveConstants.screenWidth(context) * 0.025,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(child: CustomSearchBar()),
-                  SizedBox(width: 10),
-                  SvgPicture.asset(
-                    'assets/icons/image_picker.svg',
-                    height: ResponsiveConstants.screenHeight(context) * 0.03,
-                    colorFilter: ColorFilter.mode(
-                      AppColors.grey,
-                      BlendMode.srcIn,
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        color: AppColors.orange,
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveConstants.screenWidth(context) * 0.025,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: CustomSearchBar()),
+                    SizedBox(width: 10),
+                    SvgPicture.asset(
+                      'assets/icons/image_picker.svg',
+                      height: ResponsiveConstants.screenHeight(context) * 0.03,
+                      colorFilter: ColorFilter.mode(
+                        AppColors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
+                ),
+                SizedBox(
+                  height: ResponsiveConstants.screenWidth(context) * 0.22,
+                  child: Card(
+                    color: AppColors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 6.0),
+                      child: ProductCategoryList(),
                     ),
                   ),
-                ],
-              ),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.14,
-                child: Card(
-                  color: AppColors.white,
+                ),
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
+                ),
+                GestureDetector(
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => TrendingProductsScreen(),
+                        ),
+                      ),
+                  child: OfferCard(),
+                ),
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
+                ),
+                GestureDetector(
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => TrendingProductsScreen(),
+                        ),
+                      ),
+                  child: DealOfTheDayCard(),
+                ),
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
+                ),
+                Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),
+                  color: AppColors.orange6,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 6.0),
-                    child: ProductCategoryList(),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-              GestureDetector(
-                onTap:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => TrendingProductsScreen(),
-                      ),
+                    padding: const EdgeInsets.only(top: 12.0, bottom: 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 6.0),
+                          child: Text(
+                            'Trending Products',
+                            style: TextStyle(
+                              fontSize:
+                                  ResponsiveConstants.screenWidth(context) *
+                                  0.04,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.orange,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children:
+                                products
+                                    .map(
+                                      (product) =>
+                                          ProductCard(product: product),
+                                    )
+                                    .toList(),
+                          ),
+                        ),
+                      ],
                     ),
-                child: OfferCard(),
-              ),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-              GestureDetector(
-                onTap: () => TrendingProductsScreen(),
-                child: DealOfTheDayCard(),
-              ),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                color: AppColors.orange6,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 12.0, bottom: 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 6.0),
-                        child: Text(
-                          'Trending Products',
-                          style: TextStyle(
-                            fontSize:
-                                ResponsiveConstants.screenWidth(context) * 0.04,
-
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.orange,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children:
-                              products
-                                  .map(
-                                    (product) =>
-                                        isLoading
-                                            ? Center(
-                                              child: CircularProgressIndicator(
-                                                color: AppColors.orange,
-                                              ),
-                                            )
-                                            : ProductCard(product: product),
-                                  )
-                                  .toList(),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-              BumperOffersCard(),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-              HighHeelsCard(),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-              TrendingProductsCard(),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-              HotSummerSaleCard(),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
                 ),
-                color: AppColors.orange6,
-                child: Padding(
-                  padding:  EdgeInsets.only(top: ResponsiveConstants.screenHeight(context) * 0.01),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 6.0),
-                        child: Text(
-                          'Lowest Prices Products',
-                          style: TextStyle(
-                            fontSize: ResponsiveConstants.screenWidth(context) * 0.05,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.orange,
+                BumperOffersCard(),
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
+                ),
+                HighHeelsCard(),
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
+                ),
+                TrendingProductsCard(),
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
+                ),
+                HotSummerSaleCard(),
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
+                ),
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  color: AppColors.orange6,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: ResponsiveConstants.screenHeight(context) * 0.01,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 6.0),
+                          child: Text(
+                            'Lowest Prices Products',
+                            style: TextStyle(
+                              fontSize:
+                                  ResponsiveConstants.screenWidth(context) *
+                                  0.05,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.orange,
+                            ),
                           ),
                         ),
-                      ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children:
-                              dummyProducts
-                                  .map(
-                                    (dummyProduct) =>
-                                        isLoading
-                                            ? Center(
-                                              child: CircularProgressIndicator(
-                                                color: AppColors.orange,
-                                              ),
-                                            )
-                                            : SmallProductCard(
-                                              products: dummyProduct,
-                                            ),
-                                  )
-                                  .toList(),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children:
+                                dummyProducts
+                                    .map(
+                                      (dummyProduct) => SmallProductCard(
+                                        products: dummyProduct,
+                                      ),
+                                    )
+                                    .toList(),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-              SponseredCard(),
-              SizedBox(
-                height: ResponsiveConstants.screenHeight(context) * 0.01,
-              ),
-            ],
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
+                ),
+                SponseredCard(),
+                SizedBox(
+                  height: ResponsiveConstants.screenHeight(context) * 0.01,
+                ),
+              ],
+            ),
           ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: AppColors.orange,
+        unselectedItemColor: AppColors.grey,
         items: [
           BottomNavigationBarItem(
             icon: SvgPicture.asset('assets/icons/home.svg', height: 30),
@@ -328,5 +387,18 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isPageLoading) {
+      return _buildLoadingScreen();
+    }
+
+    if (errorMessage != null) {
+      return _buildErrorScreen();
+    }
+
+    return _buildMainContent();
   }
 }

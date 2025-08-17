@@ -14,7 +14,6 @@ class BumperOffersCard extends StatelessWidget {
       child: Padding(
         padding:  EdgeInsets.all(ResponsiveConstants.screenWidth(context) * 0.03),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start, 
           children: [
             Image.asset(
               'assets/images/bumper_offer.png',
