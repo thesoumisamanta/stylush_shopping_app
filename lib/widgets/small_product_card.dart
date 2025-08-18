@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stylush_shopping_app/constants/responsive_constants.dart';
 import 'package:stylush_shopping_app/models/products_model.dart';
 import 'package:stylush_shopping_app/themes/app_colors.dart';
 
@@ -19,16 +20,25 @@ class SmallProductCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       color: AppColors.white,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(
+          ResponsiveConstants.screenWidth(context) * 0.02,
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(products.thumbnail!, height: 90,),
+            Image.network(
+              products.thumbnail!,
+              height: ResponsiveConstants.screenWidth(context) * 0.35,
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   limitWords(products.title!, 15),
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    fontSize: ResponsiveConstants.screenWidth(context) * 0.035,
+                    fontWeight: FontWeight.w500,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -40,8 +50,7 @@ class SmallProductCard extends StatelessWidget {
                         AppColors.black,
                         BlendMode.srcIn,
                       ),
-                      height: 8,
-                      width: 8,
+                      height: ResponsiveConstants.screenWidth(context) * 0.025,
                     ),
                     SizedBox(width: 2),
                     Text(
@@ -49,7 +58,8 @@ class SmallProductCard extends StatelessWidget {
                               (1 - (products.discountPercentage! / 100)))
                           .toStringAsFixed(2),
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize:
+                            ResponsiveConstants.screenWidth(context) * 0.03,
                         fontWeight: FontWeight.w400,
                         color: AppColors.black,
                       ),
@@ -61,7 +71,8 @@ class SmallProductCard extends StatelessWidget {
                     Text(
                       '₹${products.price?.toStringAsFixed(0) ?? ''}',
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize:
+                            ResponsiveConstants.screenWidth(context) * 0.03,
                         color: Colors.grey,
                         decoration: TextDecoration.lineThrough,
                       ),
@@ -69,7 +80,11 @@ class SmallProductCard extends StatelessWidget {
                     SizedBox(width: 4),
                     Text(
                       "${products.discountPercentage?.round() ?? 0}% off",
-                      style: TextStyle(color: AppColors.orange, fontSize: 10),
+                      style: TextStyle(
+                        color: AppColors.orange,
+                        fontSize:
+                            ResponsiveConstants.screenWidth(context) * 0.03,
+                      ),
                     ),
                   ],
                 ),

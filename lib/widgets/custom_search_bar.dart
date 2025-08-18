@@ -5,12 +5,25 @@ import 'package:stylush_shopping_app/themes/app_colors.dart';
 
 class CustomSearchBar extends StatelessWidget {
   final double? height;
-  const CustomSearchBar({super.key, this.height});
+  final TextEditingController? searchController;
+  final ValueChanged<String>? onChanged;
+  final String? hintText;
+  final bool enabled;
+  const CustomSearchBar({
+    super.key,
+    this.height,
+    this.searchController,
+    this.onChanged,
+    this.hintText,
+    this.enabled = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SearchBar(
-      hintText: 'Search any product',
+      hintText: hintText,
+      controller: searchController,
+      onChanged: onChanged,
       hintStyle: WidgetStatePropertyAll(
         TextStyle(
           color: AppColors.grey2,
@@ -20,7 +33,7 @@ class CustomSearchBar extends StatelessWidget {
       leading: SvgPicture.asset(
         'assets/icons/search.svg',
         colorFilter: ColorFilter.mode(AppColors.grey2, BlendMode.srcIn),
-        height: ResponsiveConstants.screenWidth(context) * 0.04,
+        height: ResponsiveConstants.screenHeight(context) * 0.025,
       ),
       trailing: [
         SvgPicture.asset(
@@ -35,7 +48,7 @@ class CustomSearchBar extends StatelessWidget {
       backgroundColor: WidgetStateProperty.all(AppColors.white),
       elevation: WidgetStatePropertyAll(2),
       constraints: BoxConstraints(
-        minHeight: ResponsiveConstants.screenHeight(context) * 0.05,
+        minHeight: height ?? ResponsiveConstants.screenHeight(context) * 0.05,
       ),
     );
   }
