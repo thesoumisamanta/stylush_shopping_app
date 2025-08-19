@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:stylush_shopping_app/constants/responsive_constants.dart';
 import 'package:stylush_shopping_app/controllers/splash_controller.dart';
-import 'package:stylush_shopping_app/screens/app_tour.dart';
+import 'package:stylush_shopping_app/screens/app_tour_screen.dart';
 import 'package:stylush_shopping_app/themes/app_colors.dart';
+import 'package:stylush_shopping_app/utils/slide_page_route.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -25,12 +27,16 @@ class _SplashScreenState extends State<SplashScreen>
   void _navigateToNextScreen() async {
     await Future.delayed(Duration(seconds: 7));
 
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => AppTour()),
-      );
-    }
+    _navigateToAppTourScreen();
+  }
+
+  void _navigateToAppTourScreen() {
+    SlideNavigation.pushReplacement(
+      context,
+      AppTourScreen(),
+      duration: const Duration(seconds: 1),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   @override
@@ -54,7 +60,10 @@ class _SplashScreenState extends State<SplashScreen>
                   position: _splashController.slideAnimation,
                   child: Transform.translate(
                     offset: Offset(0, _splashController.bounceAnimation.value),
-                    child: Image.asset('assets/images/stylush_bag.png'),
+                    child: Image.asset(
+                      'assets/images/stylush_bag.png',
+                      height: ResponsiveConstants.screenHeight(context) * 0.2,
+                    ),
                   ),
                 );
               },
@@ -113,7 +122,7 @@ class _SplashScreenState extends State<SplashScreen>
                         child: Text(
                           'Stylush',
                           style: TextStyle(
-                            fontSize: 55,
+                            fontSize: ResponsiveConstants.screenWidth(context) * 0.1,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                             letterSpacing: 2,

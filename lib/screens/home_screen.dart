@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stylush_shopping_app/constants/responsive_constants.dart';
-
 import 'package:stylush_shopping_app/provider/product_provider.dart';
-import 'package:stylush_shopping_app/screens/profile_screen.dart';
 import 'package:stylush_shopping_app/screens/trending_products_screen.dart';
 import 'package:stylush_shopping_app/themes/app_colors.dart';
+import 'package:stylush_shopping_app/utils/slide_page_route.dart';
 import 'package:stylush_shopping_app/widgets/bumper_offers_card.dart';
 import 'package:stylush_shopping_app/widgets/custom_search_bar.dart';
 import 'package:stylush_shopping_app/widgets/deal_of_the_day_card.dart';
@@ -33,6 +32,15 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductProvider>().loadAllData();
     });
+  }
+
+  void _navigateToTrendingProductsDetails() {
+    SlideNavigation.push(
+      context,
+      TrendingProductsScreen(),
+      duration: const Duration(seconds: 1),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   Widget _buildLoadingScreen() {
@@ -140,12 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
             centerTitle: true,
             actions: [
               IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => ProfileScreen()),
-                  );
-                },
+                onPressed: _navigateToTrendingProductsDetails,
                 icon: Icon(
                   Icons.person_2_rounded,
                   size: ResponsiveConstants.screenHeight(context) * 0.03,
@@ -170,7 +173,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Row(
                       children: [
-                        Expanded(child: CustomSearchBar(hintText: 'Search any product',)),
+                        Expanded(
+                          child: CustomSearchBar(
+                            hintText: 'Search any product',
+                          ),
+                        ),
                         SizedBox(width: 10),
                         SvgPicture.asset(
                           'assets/icons/image_picker.svg',
@@ -203,26 +210,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: ResponsiveConstants.screenHeight(context) * 0.01,
                     ),
                     GestureDetector(
-                      onTap:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => TrendingProductsScreen(),
-                            ),
-                          ),
+                      onTap: _navigateToTrendingProductsDetails,
                       child: OfferCard(),
                     ),
                     SizedBox(
                       height: ResponsiveConstants.screenHeight(context) * 0.01,
                     ),
                     GestureDetector(
-                      onTap:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => TrendingProductsScreen(),
-                            ),
-                          ),
+                      onTap: () => _navigateToTrendingProductsDetails,
                       child: DealOfTheDayCard(),
                     ),
                     SizedBox(
@@ -298,7 +293,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Padding(
                         padding: EdgeInsets.only(
                           top: ResponsiveConstants.screenHeight(context) * 0.01,
-                          bottom: ResponsiveConstants.screenHeight(context) * 0.004,
+                          bottom:
+                              ResponsiveConstants.screenHeight(context) * 0.004,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

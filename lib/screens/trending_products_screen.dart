@@ -4,8 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:stylush_shopping_app/constants/responsive_constants.dart';
 import 'package:stylush_shopping_app/models/products_model.dart';
 import 'package:stylush_shopping_app/provider/product_provider.dart';
-import 'package:stylush_shopping_app/screens/product_deatils_screen.dart';
+import 'package:stylush_shopping_app/screens/product_details_screen.dart';
 import 'package:stylush_shopping_app/themes/app_colors.dart';
+import 'package:stylush_shopping_app/utils/slide_page_route.dart';
 import 'package:stylush_shopping_app/widgets/custom_search_bar.dart';
 import 'package:stylush_shopping_app/widgets/small_product_card.dart';
 
@@ -63,9 +64,15 @@ class _TrendingProductsScreenState extends State<TrendingProductsScreen> {
   void _onProductTap(ProductsModel product) {
     context.read<ProductProvider>().setSelectedProduct(product);
 
-    Navigator.push(
+    _navigateToProductDetailsScreen();
+  }
+
+  void _navigateToProductDetailsScreen() {
+    SlideNavigation.push(
       context,
-      MaterialPageRoute(builder: (_) => ProductDeatilsScreen()),
+      ProductDetailsScreen(),
+      duration: const Duration(seconds: 1),
+      curve: Curves.easeInOutCubic,
     );
   }
 
@@ -85,8 +92,7 @@ class _TrendingProductsScreenState extends State<TrendingProductsScreen> {
                 },
                 icon: SvgPicture.asset(
                   'assets/icons/back_arrow.svg',
-                  height: 24,
-                  width: 24,
+                  height: ResponsiveConstants.screenWidth(context) * 0.05,
                 ),
               ),
               Expanded(

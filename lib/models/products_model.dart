@@ -1,6 +1,7 @@
 class ProductsModel {
   final int id;
   final String? title;
+  final String? description;
   final String? category;
   final String? thumbnail;
   final List<String>? images;
@@ -10,6 +11,7 @@ class ProductsModel {
   ProductsModel({
     required this.id,
     this.title,
+    this.description,
     this.category,
     this.thumbnail,
     this.images,
@@ -21,6 +23,7 @@ class ProductsModel {
     return ProductsModel(
       id: json['id'],
       title: json['title'],
+      description: json['description'],
       category: json['category'],
       thumbnail: json['thumbnail'],
       images: List<String>.from(json['images']),
