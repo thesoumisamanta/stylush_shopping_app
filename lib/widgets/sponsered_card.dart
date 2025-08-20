@@ -13,27 +13,27 @@ class SponseredCard extends StatefulWidget {
 class _SponseredCardState extends State<SponseredCard> {
   final List<Map<String, String>> _slides = [
     {
-      'image': 'assets/images/nike_shoe.png',
+      'image': 'assets/images/nike_shoe.jpeg',
       'off': '50% off',
       'caption': 'Up to 50% off on Nike Shoes',
     },
     {
-      'image': 'assets/images/mamaearth_beauties.png',
+      'image': 'assets/images/mamaearth_beauties.jpeg',
       'off': '30% off',
       'caption': 'Up to 30% off on Mamaearth ',
     },
     {
-      'image': 'assets/images/ladies_jeans.png',
+      'image': 'assets/images/ladies_jeans.jpeg',
       'off': '10% off',
       'caption': 'Up to 10% off on Ladies Jeans',
     },
     {
-      'image': 'assets/images/oxidise_jwellary.png',
+      'image': 'assets/images/oxidise_jwellary.jpeg',
       'off': '40% off',
       'caption': 'Up to 30% off on Oxidise Jwellary',
     },
     {
-      'image': 'assets/images/ladies_bags.png',
+      'image': 'assets/images/ladies_bags.jpeg',
       'off': '20% off',
       'caption': 'Up to 30% off on Ladies Bags',
     },

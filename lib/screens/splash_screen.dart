@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen>
     SlideNavigation.pushReplacement(
       context,
       AppTourScreen(),
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOutCubic,
     );
   }

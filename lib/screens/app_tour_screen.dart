@@ -33,7 +33,7 @@ class _AppTourScreenState extends State<AppTourScreen> {
     SlideNavigation.pushReplacement(
       context,
       WelcomeScreen(),
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOutCubic,
     );
   }

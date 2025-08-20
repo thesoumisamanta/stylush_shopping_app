@@ -71,7 +71,7 @@ class _TrendingProductsScreenState extends State<TrendingProductsScreen> {
     SlideNavigation.push(
       context,
       ProductDetailsScreen(),
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOutCubic,
     );
   }
@@ -79,10 +79,12 @@ class _TrendingProductsScreenState extends State<TrendingProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: AppColors.white,
-        elevation: 1,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.grey.shade100,
         flexibleSpace: SafeArea(
           child: Row(
             children: [

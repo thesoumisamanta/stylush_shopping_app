@@ -16,7 +16,7 @@ class HotSummerSaleCard extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            Image.asset('assets/images/hot_summer_sale.png'),
+            Image.asset('assets/images/hot_summer_sale.jpeg'),
             SizedBox(height: ResponsiveConstants.screenHeight(context) * 0.01),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

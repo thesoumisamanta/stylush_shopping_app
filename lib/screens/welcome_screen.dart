@@ -26,7 +26,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     SlideNavigation.pushReplacement(
       context,
       HomeScreen(),
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOutCubic,
     );
   }
@@ -37,7 +37,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       body: Stack(
         children: [
           AutoSlidingPageView(
-            slideDuration: Duration(seconds: 2),
+            slideDuration: Duration(seconds: 1),
             animationDuration: Duration(milliseconds: 500),
             enableInfiniteLoop: true,
             allowUserScroll: false,

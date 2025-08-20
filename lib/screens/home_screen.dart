@@ -3,14 +3,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stylush_shopping_app/constants/responsive_constants.dart';
 import 'package:stylush_shopping_app/provider/product_provider.dart';
+import 'package:stylush_shopping_app/screens/profile_screen.dart';
 import 'package:stylush_shopping_app/screens/trending_products_screen.dart';
 import 'package:stylush_shopping_app/themes/app_colors.dart';
 import 'package:stylush_shopping_app/utils/slide_page_route.dart';
+import 'package:stylush_shopping_app/widgets/bottom_nav_item.dart';
 import 'package:stylush_shopping_app/widgets/bumper_offers_card.dart';
+import 'package:stylush_shopping_app/widgets/custom_bottom_nav_bar.dart';
 import 'package:stylush_shopping_app/widgets/custom_search_bar.dart';
 import 'package:stylush_shopping_app/widgets/deal_of_the_day_card.dart';
 import 'package:stylush_shopping_app/widgets/high_heels_card.dart';
 import 'package:stylush_shopping_app/widgets/hot_summer_sale_card.dart';
+import 'package:stylush_shopping_app/widgets/media_picker_dialog_box.dart';
+import 'package:stylush_shopping_app/widgets/navigation_wrapper.dart';
 import 'package:stylush_shopping_app/widgets/offer_card.dart';
 import 'package:stylush_shopping_app/widgets/product_card.dart';
 import 'package:stylush_shopping_app/widgets/product_category_list.dart';
@@ -38,7 +43,16 @@ class _HomeScreenState extends State<HomeScreen> {
     SlideNavigation.push(
       context,
       TrendingProductsScreen(),
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
+  void _navigateToProfileScreen() {
+    SlideNavigation.push(
+      context,
+      ProfileScreen(),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOutCubic,
     );
   }
@@ -127,6 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: AppColors.white,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: Colors.grey.shade100,
             title: Text(
               'Stylush',
               style: TextStyle(
@@ -148,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
             centerTitle: true,
             actions: [
               IconButton(
-                onPressed: _navigateToTrendingProductsDetails,
+                onPressed: _navigateToProfileScreen,
                 icon: Icon(
                   Icons.person_2_rounded,
                   size: ResponsiveConstants.screenHeight(context) * 0.03,
@@ -171,6 +187,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(
+                      height: ResponsiveConstants.screenHeight(context) * 0.02,
+                    ),
                     Row(
                       children: [
                         Expanded(
@@ -178,14 +197,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             hintText: 'Search any product',
                           ),
                         ),
-                        SizedBox(width: 10),
-                        SvgPicture.asset(
-                          'assets/icons/image_picker.svg',
-                          height:
-                              ResponsiveConstants.screenHeight(context) * 0.03,
-                          colorFilter: ColorFilter.mode(
-                            AppColors.grey,
-                            BlendMode.srcIn,
+                        SizedBox(width: 5),
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => MediaPickerDialogBox(),
+                            );
+                          },
+                          child: SvgPicture.asset(
+                            'assets/icons/camera.svg',
+                            height:
+                                ResponsiveConstants.screenHeight(context) *
+                                0.05,
+                            colorFilter: ColorFilter.mode(
+                              AppColors.orange,
+                              BlendMode.srcIn,
+                            ),
                           ),
                         ),
                       ],
@@ -341,33 +369,76 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: AppColors.orange,
-            unselectedItemColor: AppColors.grey,
-            items: [
-              BottomNavigationBarItem(
-                icon: SvgPicture.asset('assets/icons/home.svg', height: 30),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: SvgPicture.asset('assets/icons/wishlist.svg', height: 30),
-                label: 'Wishlist',
-              ),
-              BottomNavigationBarItem(
-                icon: SvgPicture.asset('assets/icons/cart.svg', height: 40),
-                label: 'Cart',
-              ),
-              BottomNavigationBarItem(
-                icon: SvgPicture.asset('assets/icons/search.svg', height: 30),
-                label: 'Search',
-              ),
-              BottomNavigationBarItem(
-                icon: SvgPicture.asset('assets/icons/settings.svg', height: 30),
-                label: 'Settings',
-              ),
-            ],
-          ),
+          // bottomNavigationBar: NavigationWrapper()
+          // CustomBottomNavBar(
+          //   items: [
+          //     BottomNavItem(
+          //       label: "Home",
+          //       icon: SvgPicture.asset(
+          //         'assets/icons/home.svg',
+          //         height: ResponsiveConstants.screenWidth(context) * 0.06,
+          //         colorFilter: const ColorFilter.mode(
+          //           AppColors.orange,
+          //           BlendMode.srcIn,
+          //         ),
+          //       ),
+          //       onTap: () {},
+          //       isActive: true,
+          //     ),
+          //     BottomNavItem(
+          //       label: "Wishlist",
+          //       icon: SvgPicture.asset(
+          //         'assets/icons/wishlist.svg',
+          //         height: ResponsiveConstants.screenWidth(context) * 0.06,
+          //         colorFilter: const ColorFilter.mode(
+          //           AppColors.orange,
+          //           BlendMode.srcIn,
+          //         ),
+          //       ),
+          //       onTap: () {},
+          //       isActive: true,
+          //     ),
+          //     BottomNavItem(
+          //       label: "Cart",
+          //       icon: SvgPicture.asset(
+          //         'assets/icons/cart.svg',
+          //         height: ResponsiveConstants.screenWidth(context) * 0.06,
+          //         colorFilter: const ColorFilter.mode(
+          //           AppColors.orange,
+          //           BlendMode.srcIn,
+          //         ),
+          //       ),
+          //       onTap: () {},
+          //       isActive: true,
+          //     ),
+          //     BottomNavItem(
+          //       label: "Orders",
+          //       icon: SvgPicture.asset(
+          //         'assets/icons/order_bag.svg',
+          //         height: ResponsiveConstants.screenWidth(context) * 0.06,
+          //         colorFilter: const ColorFilter.mode(
+          //           AppColors.orange,
+          //           BlendMode.srcIn,
+          //         ),
+          //       ),
+          //       onTap: () {},
+          //       isActive: true,
+          //     ),
+          //     BottomNavItem(
+          //       label: "Settings",
+          //       icon: SvgPicture.asset(
+          //         'assets/icons/settings.svg',
+          //         height: ResponsiveConstants.screenWidth(context) * 0.06,
+          //         colorFilter: const ColorFilter.mode(
+          //           AppColors.orange,
+          //           BlendMode.srcIn,
+          //         ),
+          //       ),
+          //       onTap: () {},
+          //       isActive: true,
+          //     ),
+          //   ],
+          // ),
         );
       },
     );

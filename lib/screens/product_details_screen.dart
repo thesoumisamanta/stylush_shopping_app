@@ -5,6 +5,8 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:stylush_shopping_app/constants/responsive_constants.dart';
 import 'package:stylush_shopping_app/provider/product_provider.dart';
 import 'package:stylush_shopping_app/themes/app_colors.dart';
+import 'package:stylush_shopping_app/widgets/custom_bottom_nav_bar.dart';
+import 'package:stylush_shopping_app/widgets/custom_button.dart';
 import 'package:stylush_shopping_app/widgets/custom_snack_bar.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -63,10 +65,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: AppColors.white,
-        elevation: 1,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.grey.shade100,
         flexibleSpace: SafeArea(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -133,7 +137,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       if (imageUrls.length > 1)
                         Positioned(
-                          bottom: ResponsiveConstants.screenHeight(context) * 0.01,
+                          bottom:
+                              ResponsiveConstants.screenHeight(context) * 0.01,
                           left: 0,
                           right: 0,
                           child: Center(
@@ -351,79 +356,28 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           );
         },
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveConstants.screenWidth(context) * 0.025,
-          vertical: ResponsiveConstants.screenWidth(context) * 0.005,
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  CustomSnackBar.show(
-                    context,
-                    message: "Item added to cart",
-                    backgroundColor: AppColors.orange,
-                    icon: Icons.check_circle,
-                    height: ResponsiveConstants.screenHeight(context) * 0.06,
-                    borderRadius: 6,
-                    duration: Duration(seconds: 4),
-                  );
-                },
-
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.orange,
-                  foregroundColor: AppColors.white,
-                  padding: EdgeInsets.symmetric(
-                    vertical: ResponsiveConstants.screenWidth(context) * 0.025,
-                  ),
-                  minimumSize: Size(
-                    double.infinity,
-                    ResponsiveConstants.screenWidth(context) * 0.04,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(
-                  'Add to Cart',
-                  style: TextStyle(
-                    fontSize: ResponsiveConstants.screenWidth(context) * 0.035,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: ResponsiveConstants.screenWidth(context) * 0.04),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.orange),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              height: ResponsiveConstants.screenWidth(context) * 0.1,
-              width: ResponsiveConstants.screenWidth(context) * 0.1,
-              child: IconButton(
-                onPressed: () {
-                  CustomSnackBar.show(
-                    context,
-                    message: "Item added to wishlist",
-                    backgroundColor: AppColors.orange,
-                    icon: Icons.check_circle,
-                    height: ResponsiveConstants.screenHeight(context) * 0.06,
-                    borderRadius: 6,
-                    duration: Duration(seconds: 4),
-                  );
-                },
-                icon: Icon(
-                  Icons.favorite_border,
-                  color: AppColors.orange,
-                  size: ResponsiveConstants.screenWidth(context) * 0.05,
-                ),
-              ),
-            ),
-          ],
-        ),
+      bottomNavigationBar: CustomBottomNavBar(
+        spacing: ResponsiveConstants.screenWidth(context) * 0.03,
+        padding: ResponsiveConstants.screenWidth(context) * 0.03,
+        items: [
+          CustomButton(
+            label: 'Add to cart',
+            onPressed: () {},
+            type: ButtonType.elevated,
+            backgroundColor: AppColors.orange,
+            height: ResponsiveConstants.screenHeight(context) * 0.07,
+            expand: true,
+          ),
+          CustomButton(
+            label: 'Buy now',
+            onPressed: () {},
+            type: ButtonType.outlined,
+            textColor: AppColors.orange,
+            backgroundColor: AppColors.orange,
+            height: ResponsiveConstants.screenHeight(context) * 0.07,
+            expand: true,
+          ),
+        ],
       ),
     );
   }
